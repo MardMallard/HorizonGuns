@@ -26,6 +26,7 @@ FEATURES
 	- Reload period
 	- Ammunition type
 	- Damage
+	- Shots per reload
 	- Projectile speed
 
 CONFIGURATION
