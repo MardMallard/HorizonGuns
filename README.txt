@@ -13,7 +13,7 @@ able to use all guns defined in configuration.
 INSTALLATION
 ------------
 
-To install this plugin on your server, simply copy "SimpleCustomGuns.jar" 
+To install this plugin on your server, simply copy "HorizonGuns.jar" 
 into your "/plugins" directory. Upon the next server restart the plugin will be 
 loaded automatically and a default configuration file will be generated. It is 
 recommended that the plugin be configured for your individual needs.
@@ -31,7 +31,7 @@ FEATURES
 CONFIGURATION
 -------------
 To configure this plugin, modify the contents of "config.yml" in your 
-"/plugins/SimpleCustomGuns" directory. Keep in mind this will not be 
+"/plugins/HorizonGuns" directory. Keep in mind this will not be 
 generated until the server is started for the first time.
 
 All configuration files for Bukkit use YAML format: http://yaml.org/
