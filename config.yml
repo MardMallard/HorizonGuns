@@ -1,0 +1,32 @@
+#Each key must be an item ID, in all-caps (example: WOOD_SPADE). It is case-sensitive and underscore sensitive. http://minecraft.gamepedia.com/Data_values/Item_IDs
+#ammoType can only be ARROW (uses energy cells) or SNOW_BALL (uses bullets).
+#cooldown controls how often you can shoot in ticks. 20 ticks = 1 second.
+#reloadCooldown controls how long you need to wait after reloading to shoot again. 20 ticks = 1 second.
+#projectileSpeed controls how fast / far your gun shoots. Trial and error is the best indicator for this.
+
+#Copy the existing format. You may add as many guns as you want.
+
+WOOD_SPADE:
+  ammoType: ARROW
+  cooldown: 10
+  reloadCooldown: 20
+  shotsPerReload: 8
+  projectileSpeed: 2
+STONE_PICKAXE:
+  ammoType: ARROW
+  cooldown: 20
+  reloadCooldown: 40
+  shotsPerReload: 6
+  projectileSpeed: 5
+DIAMOND_SPADE:
+  ammoType: ARROW
+  cooldown: 10
+  reloadCooldown: 20
+  shotsPerReload: 10
+  projectileSpeed: 2
+IRON_HOE:
+  ammoType: SNOW_BALL
+  cooldown: 20
+  reloadCooldown: 40
+  shotsPerReload: 8
+  projectileSpeed: 3

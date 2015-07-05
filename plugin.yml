@@ -1,0 +1,4 @@
+name: HorizonGuns
+main: com.gmail.Rhisereld.HorizonGuns.Main
+version: 1.0
+softdepend: [Vault]
