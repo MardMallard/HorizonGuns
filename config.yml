@@ -8,6 +8,7 @@
 
 EXAMPLE_ITEM:
   ammoType: ARROW
+  ammoName: "Energy Cell"
   cooldown: 10
   reloadCooldown: 20
   shotsPerReload: 8

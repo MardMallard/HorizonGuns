@@ -3,8 +3,8 @@ package com.gmail.Rhisereld.HorizonGuns;
 import java.util.HashMap;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Arrow;
@@ -20,13 +20,6 @@ public class GunListener implements Listener
 {	
 	JavaPlugin plugin;
 	FileConfiguration config;
-	
-	String ammoType;
-	int cooldown;
-	int reloadCooldown;
-	int shotsPerReload;
-	int damage;
-	float projectileSpeed;
 	
 	HashMap<String,Long> shootCooldown = new HashMap<String,Long>();
 	
@@ -58,7 +51,7 @@ public class GunListener implements Listener
 	    		return;
 	    	
 	    	//Check if the player is on cooldown.
-	    	cooldown = config.getInt(gun + ".cooldown");
+	    	int cooldown = config.getInt(gun + ".cooldown");
 	    	
 	    	if (shootCooldown.containsKey(player.getName()) && System.currentTimeMillis() - shootCooldown.get(player.getName()) <= cooldown)
 	    		return;
@@ -68,7 +61,7 @@ public class GunListener implements Listener
 	    	//If player's ammo is 0, tell them to reload.
 	    	float maxDurability = player.getItemInHand().getType().getMaxDurability();
 	    	float currentDurability = player.getItemInHand().getDurability();
-	    	shotsPerReload = config.getInt(gun + ".shotsPerReload");
+	    	int shotsPerReload = config.getInt(gun + ".shotsPerReload");
 	    	if (currentDurability > maxDurability - 8)
 	    	{
 	    		player.sendMessage(ChatColor.RED + "*click*");
@@ -77,8 +70,8 @@ public class GunListener implements Listener
 	    	}
 	    	
 	    	//Get configuration for gun
-	    	ammoType = config.getString(gun + ".ammoType");
-	    	projectileSpeed = (float) config.getDouble(gun + ".projectileSpeed");
+	    	String ammoType = config.getString(gun + ".ammoType");
+	    	float projectileSpeed = (float) config.getDouble(gun + ".projectileSpeed");
 	    	
 	    	//Shoot the gun
 	    	if (ammoType.equalsIgnoreCase("arrow"))
@@ -109,8 +102,44 @@ public class GunListener implements Listener
 	    //Left-click -> reload
 	    if ((event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK))
 	    {
-	    	player.sendMessage("Reload.");
-	    	//To do: reload
+	    	//Check if the player is holding any of the gun types specified in configuration.
+	    	Set<String> guns = config.getKeys(false);
+	    	String gun = null;
+	    	
+	    	for (String g: guns)
+	    		if (player.getItemInHand().getType().toString().equalsIgnoreCase(g))
+	    			gun = g;
+	    	
+	    	if (gun == null)
+	    		return;
+	    	
+	    	//Check if the player is on cooldown.
+	    	int cooldown = config.getInt(gun + ".cooldown");
+	    	
+	    	if (shootCooldown.containsKey(player.getName()) && System.currentTimeMillis() - shootCooldown.get(player.getName()) <= cooldown)
+	    		return;
+	    	
+	    	shootCooldown.remove(player.getName());
+	    	
+	    	//Check if they have any ammo
+	    	Material ammo;
+	    	String ammoType = config.getString(gun + ".ammoType");
+	    	if (ammoType.equalsIgnoreCase("arrow"))
+	    		ammo = Material.ARROW;
+	    	else
+	    	{
+	    		player.sendMessage(ChatColor.RED + "Incorrect configuration for gun: " + gun + " ammoType: " + ammoType 
+	    				+ ". Please contact an administrator.");
+	    		return;
+	    	}
+	    	
+			if (!player.getInventory().contains(ammo))
+			{
+				String ammoName = config.getString(gun + ".ammoName");
+				if (ammoName == null)
+					ammoName = ammoType;
+				player.sendMessage(ChatColor.RED + "You have no ammunition left! This gun requires: " + ammoName);
+			}
 	    }
 	}
 }
