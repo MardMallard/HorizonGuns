@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -189,6 +190,32 @@ public class GunListener implements Listener
 			
 			//Clicking shouldn't do anything else.
 	    	event.setCancelled(true);
+	    }  
+	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void onArrowHit (EntityDamageByEntityEvent event)
+	{
+		if (event.getDamager() instanceof Arrow)
+	    {
+	        Arrow arrow = (Arrow) event.getDamager();
+	        if (arrow.getShooter() instanceof Player)
+	        {
+	        	Player shooter = (Player) arrow.getShooter();
+	        	
+	        	//Check if the player is holding any of the gun types specified in configuration.
+		    	Set<String> guns = config.getKeys(false);
+		    	String gun = null;
+		    	
+		    	for (String g: guns)
+		    		if (shooter.getItemInHand().getType().toString().equalsIgnoreCase(g))
+		    			gun = g;
+		    	
+		    	if (gun == null)
+		    		return;
+		    	
+		    	event.setDamage(config.getDouble(gun + ".damage"));
+	        }
 	    }
 	}
 }

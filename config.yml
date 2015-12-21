@@ -13,3 +13,4 @@ EXAMPLE_ITEM:
   reloadCooldown: 20
   shotsPerReload: 8
   projectileSpeed: 2
+  damage: 4
