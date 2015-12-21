@@ -3,8 +3,8 @@ package com.gmail.Rhisereld.HorizonGuns;
 import java.util.HashMap;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -73,6 +73,9 @@ public class GunListener implements Listener
 	    	{
 		    	Arrow shootArrow = player.launchProjectile(Arrow.class);
 		    	shootArrow.setVelocity(player.getEyeLocation().getDirection().multiply(projectileSpeed));
+		    	
+		    	//Make the sound
+		    	player.getWorld().playSound(player.getLocation(), Sound.SHOOT_ARROW, 1, 1.3F);
 	    	}
 	    	else
 	    	{
@@ -80,8 +83,6 @@ public class GunListener implements Listener
 	    				+ ". Please contact an administrator.");
 	    		return;
 	    	}
-	    	
-	    	//Make the sound.
 	    	
 	    	//Set the cooldown.
 	    	shootCooldown.put(player.getName(), System.currentTimeMillis());
