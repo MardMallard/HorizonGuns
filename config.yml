@@ -1,6 +1,6 @@
 #Each key must be an item ID (example: WOOD_SPADE). It is case-sensitive and underscore sensitive. http://minecraft.gamepedia.com/Data_values/Item_IDs
 #ammoType can only be ARROW (uses energy cells) or SNOW_BALL (uses bullets).
-#cooldown controls how often you can shoot in ticks. 20 ticks = 1 second.
+#cooldown controls how often you can shoot in milliseconds. 1000 milliseconds = 1 second.
 #reloadCooldown controls how long you need to wait after reloading to shoot again. 20 ticks = 1 second.
 #projectileSpeed controls how fast / far your gun shoots. Trial and error is the best indicator for this.
 

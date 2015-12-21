@@ -1,7 +1,9 @@
 package com.gmail.Rhisereld.HorizonGuns;
 
+import java.util.HashMap;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Arrow;
@@ -24,6 +26,8 @@ public class GunListener implements Listener
 	int shotsPerReload;
 	int damage;
 	float projectileSpeed;
+	
+	HashMap<String,Long> shootCooldown = new HashMap<String,Long>();
 	
 	public GunListener(JavaPlugin plugin)
 	{
@@ -52,6 +56,14 @@ public class GunListener implements Listener
 	    	if (gun == null)
 	    		return;
 	    	
+	    	//Check if the player is on cooldown.
+	    	cooldown = config.getInt(gun + ".cooldown");
+	    	
+	    	if (shootCooldown.containsKey(player.getName()) && System.currentTimeMillis() - shootCooldown.get(player.getName()) <= cooldown)
+	    		return;
+	    	
+	    	shootCooldown.remove(player.getName());
+	    	
 	    	//Get configuration for gun
 	    	ammoType = config.getString(gun + ".ammoType");
 	    	projectileSpeed = (float) config.getDouble(gun + ".projectileSpeed");
@@ -64,10 +76,15 @@ public class GunListener implements Listener
 	    	}
 	    	else
 	    	{
-	    		player.sendMessage(ChatColor.RED + "Incorrect configuration for gun: " + gun + "ammoType: " + ammoType 
+	    		player.sendMessage(ChatColor.RED + "Incorrect configuration for gun: " + gun + " ammoType: " + ammoType 
 	    				+ ". Please contact an administrator.");
 	    		return;
 	    	}
+	    	
+	    	//Make the sound.
+	    	
+	    	//Set the cooldown.
+	    	shootCooldown.put(player.getName(), System.currentTimeMillis());
 	    }
 		    
 	    //Left-click -> reload
