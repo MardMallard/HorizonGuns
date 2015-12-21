@@ -14,6 +14,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class GunListener implements Listener
@@ -50,10 +51,8 @@ public class GunListener implements Listener
 	    	if (gun == null)
 	    		return;
 	    	
-	    	//Check if the player is on cooldown.
-	    	int cooldown = config.getInt(gun + ".cooldown");
-	    	
-	    	if (shootCooldown.containsKey(player.getName()) && System.currentTimeMillis() - shootCooldown.get(player.getName()) <= cooldown)
+	    	//Check if the player is on cooldown.	    	
+	    	if (shootCooldown.containsKey(player.getName()) && System.currentTimeMillis() < shootCooldown.get(player.getName()))
 	    		return;
 	    	
 	    	shootCooldown.remove(player.getName());
@@ -62,10 +61,11 @@ public class GunListener implements Listener
 	    	float maxDurability = player.getItemInHand().getType().getMaxDurability();
 	    	float currentDurability = player.getItemInHand().getDurability();
 	    	int shotsPerReload = config.getInt(gun + ".shotsPerReload");
+    		int cooldown = config.getInt(gun + ".cooldown");
 	    	if (currentDurability > maxDurability - 8)
 	    	{
 	    		player.sendMessage(ChatColor.RED + "*click*");
-	    		shootCooldown.put(player.getName(), System.currentTimeMillis());
+	    		shootCooldown.put(player.getName(), System.currentTimeMillis() + cooldown);
 	    		return;
 	    	}
 	    	
@@ -96,7 +96,7 @@ public class GunListener implements Listener
 	    	player.getItemInHand().setDurability((short) (newDurability));
 	    	
 	    	//Set the cooldown.
-	    	shootCooldown.put(player.getName(), System.currentTimeMillis());
+	    	shootCooldown.put(player.getName(), System.currentTimeMillis() + cooldown);
 	    }
 		    
 	    //Left-click -> reload
@@ -114,9 +114,7 @@ public class GunListener implements Listener
 	    		return;
 	    	
 	    	//Check if the player is on cooldown.
-	    	int cooldown = config.getInt(gun + ".cooldown");
-	    	
-	    	if (shootCooldown.containsKey(player.getName()) && System.currentTimeMillis() - shootCooldown.get(player.getName()) <= cooldown)
+	    	if (shootCooldown.containsKey(player.getName()) && System.currentTimeMillis() < shootCooldown.get(player.getName()))
 	    		return;
 	    	
 	    	shootCooldown.remove(player.getName());
@@ -139,6 +137,31 @@ public class GunListener implements Listener
 				if (ammoName == null)
 					ammoName = ammoType;
 				player.sendMessage(ChatColor.RED + "You have no ammunition left! This gun requires: " + ammoName);
+			}
+			
+			//Tell them they're reloading and set cooldown
+	    	player.sendMessage(ChatColor.GOLD + "Reloading...");
+	    	shootCooldown.put(player.getName(), System.currentTimeMillis() + config.getInt(gun + ".reloadCooldown"));
+	    	
+	    	//Removing ammo and setting durability
+    		//Player has enough or more, remove shotsPerReload ammo and set durability to full
+	    	int shotsPerReload = config.getInt(gun + ".shotsPerReload");
+			if (player.getInventory().containsAtLeast(new ItemStack(ammo), shotsPerReload))
+			{
+				player.getInventory().removeItem(new ItemStack(ammo, shotsPerReload));
+				player.getItemInHand().setDurability((short) 0);
+			}
+			//Player has less than shotsPerReload
+			else
+			{
+				//Remove as much ammo as possible and store what couldn't be removed.
+				HashMap<Integer, ItemStack> ammoToLoad = player.getInventory().removeItem(new ItemStack(ammo, shotsPerReload));
+				int shotsReloaded = shotsPerReload - ammoToLoad.get(0).getAmount();
+				
+				//Set the item's durability according to the amount that was removed.
+				short maxDurability = player.getItemInHand().getType().getMaxDurability();
+				short currentDurability = player.getItemInHand().getDurability();
+				player.getItemInHand().setDurability((short) (currentDurability - shotsReloaded * (maxDurability / (double) (shotsPerReload))));
 			}
 	    }
 	}
