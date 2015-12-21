@@ -92,7 +92,7 @@ public class GunListener implements Listener
 	    	//Remove from the item's durability
 	    	if (currentDurability < 0)
 	    		currentDurability = 0;
-	    	float newDurability = currentDurability + maxDurability / shotsPerReload;
+	    	float newDurability = currentDurability + maxDurability / (float) shotsPerReload;
 	    	player.getItemInHand().setDurability((short) (newDurability));
 	    	
 	    	//Set the cooldown.
@@ -137,6 +137,7 @@ public class GunListener implements Listener
 				if (ammoName == null)
 					ammoName = ammoType;
 				player.sendMessage(ChatColor.RED + "You have no ammunition left! This gun requires: " + ammoName);
+				return;
 			}
 			
 			//Tell them they're reloading and set cooldown
@@ -161,7 +162,7 @@ public class GunListener implements Listener
 				//Set the item's durability according to the amount that was removed.
 				short maxDurability = player.getItemInHand().getType().getMaxDurability();
 				short currentDurability = player.getItemInHand().getDurability();
-				player.getItemInHand().setDurability((short) (currentDurability - shotsReloaded * (maxDurability / (double) (shotsPerReload))));
+				player.getItemInHand().setDurability((short) (currentDurability - shotsReloaded * (maxDurability / (short) (shotsPerReload))));
 			}
 	    }
 	}
