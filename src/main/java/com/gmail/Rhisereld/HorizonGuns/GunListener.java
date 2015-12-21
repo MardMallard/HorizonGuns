@@ -1,39 +1,73 @@
 package com.gmail.Rhisereld.HorizonGuns;
 
-import net.md_5.bungee.api.ChatColor;
+import java.util.Set;
 
-import org.bukkit.Material;
+import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class GunListener implements Listener
 {	
-	String GUN_TYPE = "WOOD_SPADE";
-	String AMMO_TYPE = "ARROW";
-	int COOLDOWN = 10;
-	int RELOAD_COOLDOWN = 20;
-	int SHOTS_PER_RELOAD = 8;
-	int DAMAGE = 2;
-	float PROJECTILE_SPEED = 2;
+	JavaPlugin plugin;
+	FileConfiguration config;
+	
+	String ammoType;
+	int cooldown;
+	int reloadCooldown;
+	int shotsPerReload;
+	int damage;
+	float projectileSpeed;
+	
+	public GunListener(JavaPlugin plugin)
+	{
+		this.plugin = plugin;
+		this.config = plugin.getConfig();
+	}
 	
 	//Right-click -> fire
 	//Left-click -> reload
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void gun(PlayerInteractEvent event) 
 	{
 		Player player = event.getPlayer();
 		
 		//Right-click -> fire
-	    if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
-	    		&& player.getItemInHand().getType().toString().equals(GUN_TYPE)) 
+	    if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) 
 	    {   	
-	    	Arrow shootArrow = player.launchProjectile(Arrow.class);
-	    	shootArrow.setVelocity(player.getEyeLocation().getDirection().multiply(PROJECTILE_SPEED));
+	    	//Check if the player is holding any of the gun types specified in configuration.
+	    	Set<String> guns = config.getKeys(false);
+	    	String gun = null;
+	    	
+	    	for (String g: guns)
+	    		if (player.getItemInHand().getType().toString().equalsIgnoreCase(g))
+	    			gun = g;
+	    	
+	    	if (gun == null)
+	    		return;
+	    	
+	    	//Get configuration for gun
+	    	ammoType = config.getString(gun + ".ammoType");
+	    	projectileSpeed = (float) config.getDouble(gun + ".projectileSpeed");
+	    	
+	    	//Shoot the gun
+	    	if (ammoType.equalsIgnoreCase("arrow"))
+	    	{
+		    	Arrow shootArrow = player.launchProjectile(Arrow.class);
+		    	shootArrow.setVelocity(player.getEyeLocation().getDirection().multiply(projectileSpeed));
+	    	}
+	    	else
+	    	{
+	    		player.sendMessage(ChatColor.RED + "Incorrect configuration for gun: " + gun + "ammoType: " + ammoType 
+	    				+ ". Please contact an administrator.");
+	    		return;
+	    	}
 	    }
 		    
 	    //Left-click -> reload

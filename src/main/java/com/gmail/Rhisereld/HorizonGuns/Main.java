@@ -7,10 +7,10 @@ public class Main extends JavaPlugin
 	public void onEnable()
 	{	
 		saveDefaultConfig();
-		getServer().getPluginManager().registerEvents(new GunListener(), this);
+		getServer().getPluginManager().registerEvents(new GunListener(this), this);
 	}
 	
-	public void onDisble()
+	public void onDisable()
 	{
 		
 	}
