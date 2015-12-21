@@ -1,4 +1,6 @@
 name: HorizonGuns
 main: com.gmail.Rhisereld.HorizonGuns.Main
 version: 1.0
-softdepend: [Vault]
+commands:
+  checkammo:
+    description: Check the ammunition left in the gun you are holding
