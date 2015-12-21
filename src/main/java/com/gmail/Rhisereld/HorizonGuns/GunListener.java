@@ -32,8 +32,8 @@ public class GunListener implements Listener
 	
 	//Right-click -> fire
 	//Left-click -> reload
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void gun(PlayerInteractEvent event) 
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onRightClick(PlayerInteractEvent event) 
 	{
 		Player player = event.getPlayer();
 		
@@ -53,8 +53,12 @@ public class GunListener implements Listener
 	    	
 	    	//Check if the player is on cooldown.	    	
 	    	if (shootCooldown.containsKey(player.getName()) && System.currentTimeMillis() < shootCooldown.get(player.getName()))
+	    	{
+	    		//Clicking shouldn't do anything else.
+		    	event.setCancelled(true);
 	    		return;
-	    	
+	    	}
+
 	    	shootCooldown.remove(player.getName());
 	    	
 	    	//If player's ammo is 0, tell them to reload.
@@ -66,6 +70,9 @@ public class GunListener implements Listener
 	    	{
 	    		player.sendMessage(ChatColor.RED + "*click*");
 	    		shootCooldown.put(player.getName(), System.currentTimeMillis() + cooldown);
+	    		
+	    		//Clicking shouldn't do anything else.
+		    	event.setCancelled(true);
 	    		return;
 	    	}
 	    	
@@ -86,6 +93,9 @@ public class GunListener implements Listener
 	    	{
 	    		player.sendMessage(ChatColor.RED + "Incorrect configuration for gun: " + gun + " ammoType: " + ammoType 
 	    				+ ". Please contact an administrator.");
+	    		
+	    		//Clicking shouldn't do anything else.
+		    	event.setCancelled(true);
 	    		return;
 	    	}
 	    	
@@ -97,6 +107,10 @@ public class GunListener implements Listener
 	    	
 	    	//Set the cooldown.
 	    	shootCooldown.put(player.getName(), System.currentTimeMillis() + cooldown);
+	    	
+	    	//Clicking shouldn't do anything else.
+	    	event.setCancelled(true);
+	    	return;
 	    }
 		    
 	    //Left-click -> reload
@@ -115,8 +129,12 @@ public class GunListener implements Listener
 	    	
 	    	//Check if the player is on cooldown.
 	    	if (shootCooldown.containsKey(player.getName()) && System.currentTimeMillis() < shootCooldown.get(player.getName()))
+	    	{
+	    		//Clicking shouldn't do anything else.
+		    	event.setCancelled(true);
 	    		return;
-	    	
+	    	}
+
 	    	shootCooldown.remove(player.getName());
 	    	
 	    	//Check if they have any ammo
@@ -128,6 +146,8 @@ public class GunListener implements Listener
 	    	{
 	    		player.sendMessage(ChatColor.RED + "Incorrect configuration for gun: " + gun + " ammoType: " + ammoType 
 	    				+ ". Please contact an administrator.");
+	    		//Clicking shouldn't do anything else.
+		    	event.setCancelled(true);
 	    		return;
 	    	}
 	    	
@@ -137,6 +157,8 @@ public class GunListener implements Listener
 				if (ammoName == null)
 					ammoName = ammoType;
 				player.sendMessage(ChatColor.RED + "You have no ammunition left! This gun requires: " + ammoName);
+				//Clicking shouldn't do anything else.
+		    	event.setCancelled(true);
 				return;
 			}
 			
@@ -164,6 +186,9 @@ public class GunListener implements Listener
 				short currentDurability = player.getItemInHand().getDurability();
 				player.getItemInHand().setDurability((short) (currentDurability - shotsReloaded * (maxDurability / (short) (shotsPerReload))));
 			}
+			
+			//Clicking shouldn't do anything else.
+	    	event.setCancelled(true);
 	    }
 	}
 }
