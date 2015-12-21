@@ -3,6 +3,7 @@ package com.gmail.Rhisereld.HorizonGuns;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -64,6 +65,17 @@ public class GunListener implements Listener
 	    	
 	    	shootCooldown.remove(player.getName());
 	    	
+	    	//If player's ammo is 0, tell them to reload.
+	    	float maxDurability = player.getItemInHand().getType().getMaxDurability();
+	    	float currentDurability = player.getItemInHand().getDurability();
+	    	shotsPerReload = config.getInt(gun + ".shotsPerReload");
+	    	if (currentDurability > maxDurability - 8)
+	    	{
+	    		player.sendMessage(ChatColor.RED + "*click*");
+	    		shootCooldown.put(player.getName(), System.currentTimeMillis());
+	    		return;
+	    	}
+	    	
 	    	//Get configuration for gun
 	    	ammoType = config.getString(gun + ".ammoType");
 	    	projectileSpeed = (float) config.getDouble(gun + ".projectileSpeed");
@@ -83,6 +95,12 @@ public class GunListener implements Listener
 	    				+ ". Please contact an administrator.");
 	    		return;
 	    	}
+	    	
+	    	//Remove from the item's durability
+	    	if (currentDurability < 0)
+	    		currentDurability = 0;
+	    	float newDurability = currentDurability + maxDurability / shotsPerReload;
+	    	player.getItemInHand().setDurability((short) (newDurability));
 	    	
 	    	//Set the cooldown.
 	    	shootCooldown.put(player.getName(), System.currentTimeMillis());
