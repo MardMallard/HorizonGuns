@@ -8,7 +8,8 @@ public class Main extends JavaPlugin
 	{	
 		saveDefaultConfig();
 		getServer().getPluginManager().registerEvents(new GunListener(this), this);
-		this.getCommand("checkammo").setExecutor(new HorizonCommandParser(this.getConfig()));
+		this.getCommand("checkammo").setExecutor(new HorizonCommandParser(this, this.getConfig()));
+		this.getCommand("guns").setExecutor(new HorizonCommandParser(this, this.getConfig()));
 	}
 	
 	public void onDisable()

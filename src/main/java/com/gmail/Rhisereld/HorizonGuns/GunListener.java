@@ -21,14 +21,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class GunListener implements Listener
 {	
 	JavaPlugin plugin;
-	FileConfiguration config;
+	static FileConfiguration config;
 	
 	HashMap<String,Long> shootCooldown = new HashMap<String,Long>();
 	
 	public GunListener(JavaPlugin plugin)
 	{
 		this.plugin = plugin;
-		this.config = plugin.getConfig();
+		GunListener.config = plugin.getConfig();
+	}
+	
+	public static void updateConfig(FileConfiguration config)
+	{
+		GunListener.config = config;
 	}
 	
 	//Right-click -> fire

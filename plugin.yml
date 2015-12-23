@@ -4,3 +4,6 @@ version: 1.0
 commands:
   checkammo:
     description: Check the ammunition left in the gun you are holding
+  guns:
+    description: All admin commands.
+    permission: horizonguns.admin.reload
