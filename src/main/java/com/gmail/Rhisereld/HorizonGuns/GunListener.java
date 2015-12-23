@@ -104,7 +104,7 @@ public class GunListener implements Listener
 	    	if (currentDurability < 0)
 	    		currentDurability = 0;
 	    	float newDurability = currentDurability + maxDurability / (float) shotsPerReload;
-	    	player.getItemInHand().setDurability((short) (newDurability));
+	    	player.getItemInHand().setDurability((short)(newDurability));
 	    	
 	    	//Set the cooldown.
 	    	shootCooldown.put(player.getName(), System.currentTimeMillis() + cooldown);
@@ -168,26 +168,22 @@ public class GunListener implements Listener
 	    	shootCooldown.put(player.getName(), System.currentTimeMillis() + config.getInt(gun + ".reloadCooldown"));
 	    	
 	    	//Removing ammo and setting durability
-    		//Player has enough or more, remove shotsPerReload ammo and set durability to full
-	    	int shotsPerReload = config.getInt(gun + ".shotsPerReload");
-			if (player.getInventory().containsAtLeast(new ItemStack(ammo), shotsPerReload))
-			{
-				player.getInventory().removeItem(new ItemStack(ammo, shotsPerReload));
-				player.getItemInHand().setDurability((short) 0);
-			}
-			//Player has less than shotsPerReload
-			else
-			{
-				//Remove as much ammo as possible and store what couldn't be removed.
-				HashMap<Integer, ItemStack> ammoToLoad = player.getInventory().removeItem(new ItemStack(ammo, shotsPerReload));
-				int shotsReloaded = shotsPerReload - ammoToLoad.get(0).getAmount();
-				
-				//Set the item's durability according to the amount that was removed.
-				short maxDurability = player.getItemInHand().getType().getMaxDurability();
-				short currentDurability = player.getItemInHand().getDurability();
-				player.getItemInHand().setDurability((short) (currentDurability - shotsReloaded * (maxDurability / (short) (shotsPerReload))));
-			}
+	    	double shotsPerReload = config.getDouble(gun + ".shotsPerReload");
+			short maxDurability = player.getItemInHand().getType().getMaxDurability();
+			double currentDurability = player.getItemInHand().getDurability();
 			
+			//Remove as much ammo as possible and store what couldn't be removed.
+			double tryToLoad = Math.round(currentDurability / maxDurability * shotsPerReload);
+			HashMap<Integer, ItemStack> ammoToLoad = player.getInventory().removeItem(new ItemStack(ammo, (int) tryToLoad));
+			double shotsReloaded;
+			if (!ammoToLoad.isEmpty())
+				shotsReloaded = tryToLoad - ammoToLoad.get(0).getAmount();
+			else
+				shotsReloaded = tryToLoad;
+
+			//Set the item's durability according to the amount that was removed.
+			player.getItemInHand().setDurability((short) (currentDurability - shotsReloaded * maxDurability / shotsPerReload));
+						
 			//Clicking shouldn't do anything else.
 	    	event.setCancelled(true);
 	    }  
