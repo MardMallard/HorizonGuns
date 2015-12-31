@@ -168,26 +168,21 @@ public class GunListener implements Listener
 				return;
 			}
 			
+	    	
+			//If durability is already full don't do anything.
+			double currentDurability = player.getItemInHand().getDurability();
+			if (currentDurability <= 0)
+				return;
+			
 			//Tell them they're reloading and set cooldown
 	    	player.sendMessage(ChatColor.GOLD + "Reloading...");
 	    	shootCooldown.put(player.getName(), System.currentTimeMillis() + config.getInt(gun + ".reloadCooldown"));
-	    	
-	    	//Removing ammo and setting durability
-	    	double shotsPerReload = config.getDouble(gun + ".shotsPerReload");
-			short maxDurability = player.getItemInHand().getType().getMaxDurability();
-			double currentDurability = player.getItemInHand().getDurability();
 			
-			//Remove as much ammo as possible and store what couldn't be removed.
-			double tryToLoad = Math.round(currentDurability / maxDurability * shotsPerReload);
-			HashMap<Integer, ItemStack> ammoToLoad = player.getInventory().removeItem(new ItemStack(ammo, (int) tryToLoad));
-			double shotsReloaded;
-			if (!ammoToLoad.isEmpty())
-				shotsReloaded = tryToLoad - ammoToLoad.get(0).getAmount();
-			else
-				shotsReloaded = tryToLoad;
-
-			//Set the item's durability according to the amount that was removed.
-			player.getItemInHand().setDurability((short) (currentDurability - shotsReloaded * maxDurability / shotsPerReload));
+			//Remove one cell
+			player.getInventory().removeItem(new ItemStack(ammo, 1));
+			
+			//Set durability to full
+			player.getItemInHand().setDurability((short) 0);
 						
 			//Clicking shouldn't do anything else.
 	    	event.setCancelled(true);
